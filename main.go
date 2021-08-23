@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"startup/auth"
+	"startup/campaign"
 	"startup/handler"
 	"startup/helper"
 	"startup/user"
@@ -22,13 +24,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	UserRepository := user.NewRepository(db)
+	// repository
+	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+	// debug
+	campaigns, err := campaignRepository.FindByUserID(1)
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		fmt.Println(campaign.CampaignImages[0].FileName)
+	}
 	// service
-	UserService := user.NewService(UserRepository)
-	AuthService := auth.NewService()
+	userService := user.NewService(userRepository)
+	authService := auth.NewService()
+	// campaignService := campaign.NewService(campaignRepository)
 	// handler
-	userHandler := handler.NewUserHandler(UserService, AuthService)
+	userHandler := handler.NewUserHandler(userService, authService)
 	// router
 	router := gin.Default()
 	api := router.Group("api/v1")
@@ -36,7 +46,7 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
-	api.POST("/avatars", authMiddleware(AuthService, UserService), userHandler.UploadAvatar)
+	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
 
 	router.Run(":3000")
 	// fmt.Println("Connection to database succeed")
