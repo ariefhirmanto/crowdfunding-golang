@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"startup/auth"
@@ -34,6 +35,8 @@ func main() {
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 	// router
+	campaign, _ := campaignRepository.FindByID(1)
+	fmt.Println(campaign)
 	router := gin.Default()
 	router.Static("/images", "./images")
 	api := router.Group("api/v1")
@@ -43,6 +46,7 @@ func main() {
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(authService, userService), userHandler.UploadAvatar)
 	api.GET("/campaigns", campaignHandler.GetCampaigns)
+	api.GET("/campaigns/:id", campaignHandler.GetCampaign)
 	router.Run(":3000")
 	// fmt.Println("Connection to database succeed")
 }
