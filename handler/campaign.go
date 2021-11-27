@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"startup/campaign"
 	"startup/helper"
+	"startup/user"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -63,5 +64,38 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	response := helper.APIResponse(
 		"Detail of campaign",
 		http.StatusOK, "success", campaign.FormatCampaignDetail(campaignDetail))
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError((err))
+		errorMessage := gin.H{"errors": errors}
+		response := helper.APIResponse(
+			"Register account failed",
+			http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(user.User)
+	input.User = currentUser
+
+	newCampaign, err := h.service.CreateCampaign(input)
+	if err != nil {
+		response := helper.APIResponse(
+			"Create campaign failed",
+			http.StatusUnprocessableEntity, "error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := campaign.FormatCampaign(newCampaign)
+	response := helper.APIResponse(
+		"Success create campaign",
+		http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }
