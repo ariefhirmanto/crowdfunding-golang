@@ -57,12 +57,6 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 }
 
 func (h *userHandler) Login(c *gin.Context) {
-	// user memasukkan input (email & password)
-	// input ditangkap handler
-	// mapping input ke struct
-	// input struct passing service
-	// service cari dgn bantuan repository user dengan email input
-	// kalo ketemu, cocokkan password
 	var input user.LoginInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -91,6 +85,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
 	formatter := user.FormatUser(loggedInUser, token)
 	response := helper.APIResponse(
 		"Login Success",
@@ -133,12 +128,6 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 }
 
 func (h *userHandler) UploadAvatar(c *gin.Context) {
-	// input user
-	// simpan gambar di folder "images/"
-	// service panggil repo
-	// JWT (dummy token)
-	// repo ambil data user
-	// repo update data, simpan lokasi file gambar
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false}
@@ -148,6 +137,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
 	currentUser := c.MustGet("currentUser").(user.User)
 	userID := currentUser.ID
 	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
@@ -160,6 +150,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
 	_, err = h.userService.SaveAvatar(userID, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false}
@@ -169,6 +160,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
 	data := gin.H{"is_uploaded": true}
 	response := helper.APIResponse(
 		"Upload avatar success",
