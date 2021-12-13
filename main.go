@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"startup/auth"
 	"startup/campaign"
 	"startup/handler"
 	"startup/helper"
+	"startup/transaction"
 	"startup/user"
 	"strings"
 
@@ -24,19 +24,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
 	// repository
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
+	transactionRepository := transaction.NewRepository(db)
+
 	// service
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 	campaignService := campaign.NewService(campaignRepository)
+	transactionService := transaction.NewService(transactionRepository, campaignRepository)
+
 	// handler
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
+
 	// router
-	campaign, _ := campaignRepository.FindByID(1)
-	fmt.Println(campaign)
 	router := gin.Default()
 	router.Static("/images", "./images")
 	api := router.Group("api/v1")
@@ -53,6 +58,10 @@ func main() {
 	api.POST("/campaigns", authMiddleware(authService, userService), campaignHandler.CreateCampaign)
 	api.PUT("/campaigns/:id", authMiddleware(authService, userService), campaignHandler.UpdateCampaign)
 	api.POST("/campaign-images", authMiddleware(authService, userService), campaignHandler.UploadImage)
+
+	// Transaction
+	api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
+	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 
 	router.Run(":3000")
 	// fmt.Println("Connection to database succeed")
