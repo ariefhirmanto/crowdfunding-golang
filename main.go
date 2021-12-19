@@ -25,6 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
 	// repository
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
