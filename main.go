@@ -51,12 +51,13 @@ func main() {
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
 	transactionRepository := transaction.NewRepository(db)
+	paymentRepository := payment.NewRepository(config.Midtrans)
 
 	// service
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 	campaignService := campaign.NewService(campaignRepository)
-	paymentService := payment.NewService()
+	paymentService := payment.NewService(paymentRepository)
 	transactionService := transaction.NewService(transactionRepository, campaignRepository, paymentService)
 
 	// handler

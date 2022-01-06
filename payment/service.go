@@ -7,20 +7,31 @@ import (
 	midtrans "github.com/veritrans/go-midtrans"
 )
 
-type service struct{}
+type service struct {
+	repository Repository
+}
+
+func NewService(repository Repository) *service {
+	return &service{repository}
+}
 
 type Service interface {
 	GetPaymentURL(transaction Transaction, user user.User) (string, error)
 }
 
-func NewService() *service {
-	return &service{}
-}
-
 func (s *service) GetPaymentURL(transaction Transaction, user user.User) (string, error) {
 	midclient := midtrans.NewClient()
-	midclient.ClientKey = ""
-	midclient.ServerKey = ""
+	config, err := s.repository.GetPaymentConfig()
+	if err != nil {
+		return "", err
+	}
+
+	midclient.ClientKey = config.ClientKey
+	midclient.ServerKey = config.ServerKey
+	env := config.APIEnv
+	if env == "production" {
+		midclient.APIEnvType = midtrans.Production
+	}
 	midclient.APIEnvType = midtrans.Sandbox
 
 	snapGateway := midtrans.SnapGateway{
