@@ -22,6 +22,20 @@ type Transaction struct {
 	UpdatedAt  time.Time
 }
 
+type TransactionMVP struct {
+	ID           int
+	CampaignID   int
+	Amount       int
+	Status       string
+	Code         string
+	PaymentURL   string
+	UserFullName string
+	UserEmail    string
+	Campaign     campaign.Campaign
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+}
+
 func (t Transaction) AmountFormatIDR() string {
 	ac := accounting.Accounting{Symbol: "Rp", Precision: 2, Thousand: ".", Decimal: ","}
 	return ac.FormatMoney(t.Amount)

@@ -33,6 +33,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	// connect to db
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		config.Database.DBUser,
 		config.Database.DBPassword,
@@ -42,7 +43,6 @@ func main() {
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -74,6 +74,7 @@ func main() {
 	// router
 	router := gin.Default()
 	router.Use(cors.Default())
+	// router.Use(CORSMiddleware())
 	cookieStore := cookie.NewStore([]byte(auth.SECRET_KEY))
 	router.Use(sessions.Sessions("startup", cookieStore))
 	router.HTMLRender = loadTemplates("./web/templates")
@@ -100,10 +101,13 @@ func main() {
 	api.POST("/campaign-images", authMiddleware(authService, userService), campaignHandler.UploadImage)
 
 	// Transaction
-	api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
-	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
-	api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
+	// api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
+	// api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	// api.POST("/transactions", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
 	api.POST("/transactions/notification", transactionHandler.GetNotification)
+	api.GET("/campaigns/:id/transactions", transactionHandler.GetCampaignTransactions)
+	api.GET("/transactions", transactionHandler.GetUserTransactions)
+	api.POST("/transactions", transactionHandler.CreateTransactionMVP)
 
 	// Admin webhandler
 	router.GET("/users", authAdminMiddleware(), userWebHandler.Index)
@@ -128,8 +132,25 @@ func main() {
 	router.POST("/session", sessionWebHandler.Create)
 	router.GET("/logout", sessionWebHandler.Destroy)
 
-	router.Run(":3000")
+	router.Run(":5000")
 	// fmt.Println("Connection to database succeed")
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 func authMiddleware(authService auth.Service, userService user.Service) gin.HandlerFunc {

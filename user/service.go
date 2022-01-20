@@ -33,6 +33,7 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 	if err != nil {
 		return user, err
 	}
+
 	user.Password = string(password)
 	user.Role = "user"
 
@@ -51,13 +52,16 @@ func (s *service) Login(input LoginInput) (User, error) {
 	if err != nil {
 		return user, err
 	}
+
 	if user.ID == 0 {
 		return user, errors.New("No user found with that email")
 	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return user, err
 	}
+
 	return user, nil
 }
 
@@ -78,11 +82,13 @@ func (s *service) SaveAvatar(ID int, fileLocation string) (User, error) {
 	if err != nil {
 		return user, err
 	}
+
 	user.Avatar = fileLocation
 	updatedUser, err := s.repository.Update(user)
 	if err != nil {
 		return updatedUser, err
 	}
+
 	return updatedUser, nil
 }
 
@@ -91,6 +97,7 @@ func (s *service) GetUserByID(ID int) (User, error) {
 	if err != nil {
 		return user, err
 	}
+
 	if user.ID == 0 {
 		return user, errors.New("No user found found with that ID")
 	}

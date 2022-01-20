@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"startup/helper"
 	"startup/transaction"
@@ -28,6 +29,7 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 		return
 	}
 
+	fmt.Printf("%+v\n", input)
 	transactions, err := h.service.GetTransactionsByCampaignID(input)
 	if err != nil {
 		response := helper.APIResponse(
@@ -76,10 +78,45 @@ func (h *transactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
+	// mesti diilangin utk bikin MVP
 	currentUser := c.MustGet("currentUser").(user.User)
 	input.User = currentUser
 
 	newTransaction, err := h.service.CreateTransaction(input)
+	if err != nil {
+		response := helper.APIResponse(
+			"Create transaction failed",
+			http.StatusUnprocessableEntity, "error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := transaction.FormatTransaction(newTransaction)
+	response := helper.APIResponse(
+		"Success create transaction",
+		http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *transactionHandler) CreateTransactionMVP(c *gin.Context) {
+	var input transaction.CreateTransactionInputMVP
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError((err))
+		errorMessage := gin.H{"errors": errors}
+		response := helper.APIResponse(
+			"Create transaction failed",
+			http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	// mesti diilangin utk bikin MVP
+	// currentUser := c.MustGet("currentUser").(user.User)
+	// input.User = currentUser
+
+	newTransaction, err := h.service.CreateTransactionMVP(input)
 	if err != nil {
 		response := helper.APIResponse(
 			"Create transaction failed",
