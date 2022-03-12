@@ -17,7 +17,6 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -34,7 +33,7 @@ func main() {
 	}
 
 	// connect to db
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=Local",
 		config.Database.DBUser,
 		config.Database.DBPassword,
 		config.Database.Host,
@@ -73,8 +72,8 @@ func main() {
 
 	// router
 	router := gin.Default()
-	router.Use(cors.Default())
-	// router.Use(CORSMiddleware())
+	// router.Use(cors.Default())
+	router.Use(CORSMiddleware())
 	cookieStore := cookie.NewStore([]byte(auth.SECRET_KEY))
 	router.Use(sessions.Sessions("startup", cookieStore))
 	router.HTMLRender = loadTemplates("./web/templates")

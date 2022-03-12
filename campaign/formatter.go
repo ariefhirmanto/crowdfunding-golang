@@ -3,14 +3,15 @@ package campaign
 import "strings"
 
 type CampaignFormatter struct {
-	ID               int    `json:"id"`
-	UserID           int    `json:"user_id"`
-	Name             string `json:"name"`
-	ShortDescription string `json:"short_description"`
-	ImageURL         string `json:"image_url"`
-	GoalAmount       int    `json:"goal_amount"`
-	CurrentAmount    int    `json:"current_amount"`
-	Slug             string `json:"slug"`
+	ID               int                   `json:"id"`
+	UserID           int                   `json:"user_id"`
+	Name             string                `json:"name"`
+	ShortDescription string                `json:"short_description"`
+	ImageURL         string                `json:"image_url"`
+	GoalAmount       int                   `json:"goal_amount"`
+	CurrentAmount    int                   `json:"current_amount"`
+	User             CampaignUserFormatter `json:"user"`
+	Slug             string                `json:"slug"`
 }
 
 type CampaignDetailFormatter struct {
@@ -30,8 +31,10 @@ type CampaignDetailFormatter struct {
 }
 
 type CampaignUserFormatter struct {
-	Name     string `json:"name"`
-	ImageURL string `json:"image_url"`
+	Name        string `json:"name"`
+	Occupation  string `json:"job"`
+	Description string `json:"description"`
+	ImageURL    string `json:"image_url"`
 }
 
 type CampaignImageFormatter struct {
@@ -49,6 +52,16 @@ func FormatCampaign(campaign Campaign) CampaignFormatter {
 	formatter.CurrentAmount = campaign.CurrentAmount
 	formatter.Slug = campaign.Slug
 	formatter.ImageURL = ""
+
+	user := campaign.User
+
+	campaignUserFormatter := CampaignUserFormatter{}
+	campaignUserFormatter.Name = user.Name
+	campaignUserFormatter.Occupation = user.Occupation
+	campaignUserFormatter.Description = user.Description
+	campaignUserFormatter.ImageURL = user.Avatar
+
+	formatter.User = campaignUserFormatter
 
 	if len(campaign.CampaignImages) > 0 {
 		formatter.ImageURL = campaign.CampaignImages[0].FileName
@@ -96,6 +109,8 @@ func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
 
 	campaignUserFormatter := CampaignUserFormatter{}
 	campaignUserFormatter.Name = user.Name
+	campaignUserFormatter.Occupation = user.Occupation
+	campaignUserFormatter.Description = user.Description
 	campaignUserFormatter.ImageURL = user.Avatar
 
 	campaignDetailFormatter.User = campaignUserFormatter

@@ -8,9 +8,11 @@ type GetCampaignTransactionsInput struct {
 }
 
 type CreateTransactionInput struct {
-	Amount     int `json:"amount" binding:"required"`
-	CampaignID int `json:"campaign_id" binding:"required"`
-	User       user.User
+	Amount      int    `json:"amount" binding:"required"`
+	CampaignID  int    `json:"campaign_id" binding:"required"`
+	PaymentType int    `json:"payment_type" binding:"required"`
+	Message     string `json:"funder_message" binding:"required"`
+	User        user.User
 }
 
 type CreateTransactionInputMVP struct {
@@ -19,6 +21,8 @@ type CreateTransactionInputMVP struct {
 	// User       user.User
 	UserFullName string `json:"user_full_name" binding:"required"`
 	UserEmail    string `json:"user_email" binding:"required"`
+	PaymentType  int    `json:"payment_type" binding:"required"`
+	Message      string `json:"message" binding:"required"`
 }
 
 type TransactionNotificationInput struct {

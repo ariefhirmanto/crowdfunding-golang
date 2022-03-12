@@ -1,10 +1,11 @@
 package user
 
 type RegisterUserInput struct {
-	Name       string `json:"name" binding:"required"`
-	Occupation string `json:"occupation" binding:"required"`
-	Email      string `json:"email" binding:"required,email"`
-	Password   string `json:"password" binding:"required"`
+	Name        string `json:"name" binding:"required"`
+	Occupation  string `json:"occupation" binding:"required"`
+	Email       string `json:"email" binding:"required,email"`
+	Description string `form:"description" binding:"required"`
+	Password    string `json:"password" binding:"required"`
 }
 
 type LoginInput struct {
@@ -17,17 +18,19 @@ type CheckEmailInput struct {
 }
 
 type FormCreateUserInput struct {
-	Name       string `form:"name" binding:"required"`
-	Email      string `form:"email" binding:"required,email"`
-	Occupation string `form:"occupation" binding:"required"`
-	Password   string `form:"password" binding:"required"`
-	Error      error
+	Name        string `form:"name" binding:"required"`
+	Email       string `form:"email" binding:"required,email"`
+	Occupation  string `form:"occupation" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Password    string `form:"password" binding:"required"`
+	Error       error
 }
 
 type FormUpdateUserInput struct {
-	ID         int
-	Name       string `form:"name" binding:"required"`
-	Email      string `form:"email" binding:"required,email"`
-	Occupation string `form:"occupation" binding:"required"`
-	Error      error
+	ID          int
+	Name        string `form:"name" binding:"required"`
+	Email       string `form:"email" binding:"required,email"`
+	Occupation  string `form:"occupation" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Error       error
 }

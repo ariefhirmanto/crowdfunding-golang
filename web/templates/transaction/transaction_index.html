@@ -8,6 +8,8 @@
             <thead class="thead-light">
                 <tr>
                     <th>Campaign Name</th>
+                    <th>User</th>
+                    <th>User Email</th>
                     <th>Amount</th>
                     <th>Status</th>
                 </tr>
@@ -16,6 +18,8 @@
                 {{ range .transactions }}
                 <tr>
                     <td>{{ .Campaign.Name }}</td>
+                    <td>{{ .User.Name }}</td>
+                    <td>{{ .User.Email }}</td>
                     <td>{{ .AmountFormatIDR }}</td>
                     <td>{{ .Status }}</td>
                 </tr>

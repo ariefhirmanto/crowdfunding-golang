@@ -1,8 +1,9 @@
 package payment
 
 type Transaction struct {
-	ID     int
-	Amount int
+	ID          int
+	Amount      int
+	PaymentType string
 }
 
 type MidtransConfig struct {

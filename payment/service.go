@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"math"
 	"startup/user"
 	"strconv"
 
@@ -77,14 +78,22 @@ func (s *service) GetPaymentURLMVP(transaction Transaction, user user.User) (str
 		Client: midclient,
 	}
 
+	grossAmount := int64(transaction.Amount) + int64(math.Ceil(0.3*float64(transaction.Amount)))
+	if transaction.PaymentType == "bank_transfer" {
+		grossAmount = int64(transaction.Amount) + int64(5000)
+	}
+
 	snapReq := &midtrans.SnapReq{
 		CustomerDetail: &midtrans.CustDetail{
 			Email: user.Email,
 			FName: user.Name,
 		},
+		EnabledPayments: []midtrans.PaymentType{
+			midtrans.PaymentType(transaction.PaymentType),
+		},
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  strconv.Itoa(transaction.ID),
-			GrossAmt: int64(transaction.Amount),
+			GrossAmt: grossAmount,
 		},
 	}
 

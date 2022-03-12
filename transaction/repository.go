@@ -71,7 +71,7 @@ func (r *repository) Update(transaction Transaction) (Transaction, error) {
 func (r *repository) FindAll() ([]Transaction, error) {
 	var transactions []Transaction
 
-	err := r.db.Preload("Campaign").Order("id desc").Find(&transactions).Error
+	err := r.db.Preload("User").Preload("Campaign").Order("id desc").Find(&transactions).Error
 	if err != nil {
 		return transactions, err
 	}

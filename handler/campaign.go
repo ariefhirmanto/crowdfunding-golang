@@ -22,6 +22,7 @@ func NewCampaignHandler(service campaign.Service) *campaignHandler {
 //api/v1/campaigns
 func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Query("user_id"))
+	fmt.Printf("User id: %+v\n", userID)
 	campaigns, err := h.service.GetCampaigns(userID)
 	if err != nil {
 		response := helper.APIResponse(

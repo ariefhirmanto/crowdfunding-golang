@@ -98,6 +98,8 @@ func (s *service) CreateTransactionMVP(input CreateTransactionInputMVP) (Transac
 	transaction.User.Name = input.UserFullName
 	transaction.Status = "pending"
 	transaction.Code = ""
+	transaction.PaymentType = input.PaymentType
+	transaction.Message = input.Message
 
 	newTransaction, err := s.repository.Save(transaction)
 	if err != nil {
@@ -105,9 +107,18 @@ func (s *service) CreateTransactionMVP(input CreateTransactionInputMVP) (Transac
 	}
 
 	paymentTransaction := payment.Transaction{
-		ID:     newTransaction.ID,
-		Amount: newTransaction.Amount,
+		ID:          newTransaction.ID,
+		Amount:      newTransaction.Amount,
+		PaymentType: mapPayment[transaction.PaymentType],
 	}
+
+	// if mapPayment[transaction.PaymentType] == 'GoPay' {
+	// 			paymentURL, err := s.paymentService.GetPaymentURLMVP(paymentTransaction, transaction.User)
+	// } else if (mapPayment[transaction.PaymentType] == 'Transfer Bank') {
+	// paymentURL, err := s.paymentService.GetPaymentURLMVP(paymentTransaction, transaction.User)
+	// } else {
+	// paymentURL, err := s.paymentService.GetPaymentURLMVP(paymentTransaction, transaction.User)
+	// }
 
 	paymentURL, err := s.paymentService.GetPaymentURLMVP(paymentTransaction, transaction.User)
 	if err != nil {

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"startup/transaction"
 
@@ -21,6 +22,7 @@ func (h *transactionHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
+	fmt.Printf("%+v\n", transactions)
 
 	c.HTML(http.StatusOK, "transaction_index.html", gin.H{"transactions": transactions})
 }

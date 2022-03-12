@@ -13,6 +13,7 @@ require (
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-playground/validator/v10 v10.6.1
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gosimple/slug v1.11.2

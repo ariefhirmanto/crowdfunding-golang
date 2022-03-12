@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"startup/helper"
 	"startup/transaction"
@@ -29,7 +28,6 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("%+v\n", input)
 	transactions, err := h.service.GetTransactionsByCampaignID(input)
 	if err != nil {
 		response := helper.APIResponse(
